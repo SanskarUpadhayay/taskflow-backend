@@ -1,6 +1,7 @@
 import express, {Request, Response} from 'express';
 import dotenv from 'dotenv';
 import connectDB from './config/db';
+import authRoutes from './routes/authRoutes';
 
 dotenv.config();
 
@@ -19,6 +20,8 @@ app.get('/health',(req: Request,res: Response) => {
         "status": "OK"
     });
 });
+
+app.use('/api/auth', authRoutes);
 
 app.listen(PORT,() => {
     console.log(`Server running on PORT ${PORT}`);
