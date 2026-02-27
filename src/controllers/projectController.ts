@@ -10,7 +10,7 @@ interface UpdatedObject {
 export const createProject = async (req: Request, res: Response) => {
     try {
         const { name, description } = req.body;
-        const logged_in_user = (req as any).user;
+        const logged_in_user = req.user!;
         const project = await Project.create({
             name,
             description,
@@ -35,7 +35,7 @@ export const createProject = async (req: Request, res: Response) => {
 
 export const getAllUserProjects = async (req: Request, res: Response) => {
     try {
-        const logged_in_user = (req as any).user;
+        const logged_in_user = req.user!;
         const user_id = logged_in_user._id;
         const projects = await Project.find({ owner: user_id });
         res.status(200).json({
@@ -57,7 +57,7 @@ export const getProject = async (req: Request, res: Response) => {
         }
         const project = await Project.findById(project_id);
         if (project) {
-            if (project.owner.equals((req as any).user._id)) {
+            if (project.owner.equals(req.user!._id)) {
                 res.status(200).json(project);
                 return;
             }
@@ -88,7 +88,7 @@ export const deleteProject = async (req: Request, res: Response) => {
         }
         const project = await Project.findById(project_id);
         if (project) {
-            if (project.owner.equals((req as any).user._id)) {
+            if (project.owner.equals(req.user!._id)) {
                 await Project.deleteOne({ _id: project_id });
                 res.status(200).json({
                     "message": "Project deleted successfully"
@@ -130,7 +130,7 @@ export const updateProject = async (req: Request, res: Response) => {
         }
         const project = await Project.findById(project_id);
         if (project) {
-            if (project.owner.equals((req as any).user._id)) {
+            if (project.owner.equals(req.user!._id)) {
                 const updated_project = await Project.findByIdAndUpdate(project_id, properties_to_update, { new: true });
                 res.status(200).json({
                     "message": "Project updated successfully",

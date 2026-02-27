@@ -38,8 +38,12 @@ export const register = async (req: Request, res: Response): Promise<void> => {
             token
         })
     }
-    catch (error) {
-        res.status(500).json({ message: 'Server error'});
+    catch (error: any) {
+        if (error.name === 'ValidationError') {
+            res.status(400).json({ message: error.message });
+            return;
+        }
+        res.status(500).json({ message: 'Server error' });
     }
 }
 

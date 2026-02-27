@@ -11,7 +11,7 @@ interface UpdatedObject {
 
 export const createTask = async (req: Request, res: Response) => {
     try{
-        const logged_in_user = (req as any).user;
+        const logged_in_user = req.user!;
         const project_id = req.params.project_id;
         if(!mongoose.Types.ObjectId.isValid(project_id as string)){
             res.status(404).json({ "message": "Project not found" });
@@ -58,7 +58,7 @@ export const createTask = async (req: Request, res: Response) => {
 
 export const getAllTasksForProject = async (req: Request, res: Response) => {
     try{
-        const logged_in_user = (req as any).user;
+        const logged_in_user = req.user!;
         const project_id = req.params.project_id;
         if(!mongoose.Types.ObjectId.isValid(project_id as string)){
             res.status(404).json({ "message": "Project not found" });
@@ -91,7 +91,7 @@ export const getAllTasksForProject = async (req: Request, res: Response) => {
 
 export const getTask = async (req: Request, res: Response) => {
     try{
-        const logged_in_user = (req as any).user;
+        const logged_in_user = req.user!;
         const project_id = req.params.project_id;
         if(!mongoose.Types.ObjectId.isValid(project_id as string)){
             res.status(404).json({ "message": "Project not found" });
@@ -147,7 +147,7 @@ export const updateTask = async (req: Request, res: Response) => {
         if(status){
             properties_to_update.status = status;
         }
-        const logged_in_user = (req as any).user;
+        const logged_in_user = req.user!;
         const project_id = req.params.project_id;
         if(!mongoose.Types.ObjectId.isValid(project_id as string)){
             res.status(404).json({ "message": "Project not found" });
@@ -199,7 +199,7 @@ export const updateTask = async (req: Request, res: Response) => {
 
 export const deleteTask = async (req: Request, res: Response) => {
     try{
-        const logged_in_user = (req as any).user;
+        const logged_in_user = req.user!;
         const project_id = req.params.project_id;
         if(!mongoose.Types.ObjectId.isValid(project_id as string)){
             res.status(404).json({ "message": "Project not found" });

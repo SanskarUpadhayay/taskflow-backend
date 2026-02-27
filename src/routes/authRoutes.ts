@@ -7,8 +7,8 @@ const router = Router();
 router.post('/register', register);
 router.post('/login', login);
 
-router.get('/me', verifyToken, (req: Request, res: Response) => {
-    res.json((req as any).user);
+router.get('/me', verifyToken, (req: Request, res: Response) => { 
+    res.json(req.user);
 });
 
 export default router;
