@@ -54,6 +54,23 @@ export const createTask = async (req: Request, res: Response, next: NextFunction
 
 export const getAllTasksForProject = async (req: Request, res: Response, next: NextFunction) => {
     try{
+        const queryParamters = req.query;
+        const status = queryParamters.status as string;
+        const sort = queryParamters.sort as string;
+        const acceptable_status = ['todo','in-progress','done']; 
+        let status_flag = false;
+        if(status){
+            if(acceptable_status.includes(status)){
+                status_flag = true;
+            }
+            else{
+                //Throw validation error
+                const err = new Error('status must be todo,in-progress, or done');
+                err.name = 'ValidationError';
+                throw err;
+            }
+        }
+        const sort_order = sort === 'asc' ? 1: -1;
         const logged_in_user = req.user!;
         const project_id = req.params.project_id;
         if(!mongoose.Types.ObjectId.isValid(project_id as string)){
@@ -68,7 +85,9 @@ export const getAllTasksForProject = async (req: Request, res: Response, next: N
             return;
         }
         if(project.owner.equals(logged_in_user._id)){
-            const tasks = await Task.find({project: project_id});
+            const task_filter= {project: project_id, ...(status_flag && {status})};
+            
+            const tasks = await Task.find(task_filter).sort({createdAt: sort_order});
             res.status(200).json(tasks);
         }
         else{
