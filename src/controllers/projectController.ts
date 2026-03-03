@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import mongoose from 'mongoose';
 import Project from "../models/Project";
 
@@ -7,7 +7,7 @@ interface UpdatedObject {
     description?: string
 }
 
-export const createProject = async (req: Request, res: Response) => {
+export const createProject = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { name, description } = req.body;
         const logged_in_user = req.user!;
@@ -24,16 +24,12 @@ export const createProject = async (req: Request, res: Response) => {
         });
     }
     catch (error: any) {
-        if (error.name === 'ValidationError') {
-            res.status(400).json({ message: error.message });
-            return;
-        }
-        res.status(500).json({ message: 'Server error' });
+        next(error);
     }
 
 }
 
-export const getAllUserProjects = async (req: Request, res: Response) => {
+export const getAllUserProjects = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const logged_in_user = req.user!;
         const user_id = logged_in_user._id;
@@ -44,11 +40,11 @@ export const getAllUserProjects = async (req: Request, res: Response) => {
         );
     }
     catch (error) {
-        res.status(500).json({ message: 'Server error' });
+        next(error);
     }
 }
 
-export const getProject = async (req: Request, res: Response) => {
+export const getProject = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const project_id = req.params.project_id;
         if (!mongoose.Types.ObjectId.isValid(project_id as string)) {
@@ -75,11 +71,11 @@ export const getProject = async (req: Request, res: Response) => {
         }
     }
     catch (error) {
-        res.status(500).json({ message: 'Server error' });
+        next(error);
     }
 }
 
-export const deleteProject = async (req: Request, res: Response) => {
+export const deleteProject = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const project_id = req.params.project_id;
         if (!mongoose.Types.ObjectId.isValid(project_id as string)) {
@@ -109,11 +105,11 @@ export const deleteProject = async (req: Request, res: Response) => {
         }
     }
     catch (error) {
-        res.status(500).json({ message: 'Server error' });
+        next(error);
     }
 }
 
-export const updateProject = async (req: Request, res: Response) => {
+export const updateProject = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { name, description } = req.body;
         let properties_to_update: UpdatedObject = {}
@@ -152,6 +148,6 @@ export const updateProject = async (req: Request, res: Response) => {
         }
     }
     catch (error) {
-        res.status(500).json({ message: 'Server error' });
+        next(error);
     }
 }

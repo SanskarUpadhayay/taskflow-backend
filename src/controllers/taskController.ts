@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import Task from '../models/Task';
 import Project from '../models/Project';
@@ -9,7 +9,7 @@ interface UpdatedObject {
     status?: string
 }
 
-export const createTask = async (req: Request, res: Response) => {
+export const createTask = async (req: Request, res: Response, next: NextFunction) => {
     try{
         const logged_in_user = req.user!;
         const project_id = req.params.project_id;
@@ -48,15 +48,11 @@ export const createTask = async (req: Request, res: Response) => {
         }
     }
     catch (error: any){
-        if(error.name === 'ValidationError'){
-            res.status(400).json({ "message": error.message });
-            return;
-        }
-        res.status(500).json({ message: 'Server error'});
+        next(error);
     }
 }
 
-export const getAllTasksForProject = async (req: Request, res: Response) => {
+export const getAllTasksForProject = async (req: Request, res: Response, next: NextFunction) => {
     try{
         const logged_in_user = req.user!;
         const project_id = req.params.project_id;
@@ -83,13 +79,11 @@ export const getAllTasksForProject = async (req: Request, res: Response) => {
         }
     }
     catch(error){
-        res.status(500).json({
-            "message": "Server error"        
-        })
+        next(error);
     }
 }
 
-export const getTask = async (req: Request, res: Response) => {
+export const getTask = async (req: Request, res: Response, next: NextFunction) => {
     try{
         const logged_in_user = req.user!;
         const project_id = req.params.project_id;
@@ -128,13 +122,11 @@ export const getTask = async (req: Request, res: Response) => {
         }
     }
     catch(error){
-        res.status(500).json({
-            "message": "Server error"        
-        })
+        next(error);
     }
 }
 
-export const updateTask = async (req: Request, res: Response) => {
+export const updateTask = async (req: Request, res: Response, next: NextFunction) => {
     try{
         const { title,description,status } = req.body;
         let properties_to_update: UpdatedObject = {}
@@ -187,17 +179,11 @@ export const updateTask = async (req: Request, res: Response) => {
         }
     }
     catch(error: any){
-        if(error.name === 'ValidationError'){
-            res.status(400).json({ "message": error.message });
-            return;
-        }
-        res.status(500).json({
-            "message": "Server error"
-        })
+        next(error);
     }
 }
 
-export const deleteTask = async (req: Request, res: Response) => {
+export const deleteTask = async (req: Request, res: Response, next: NextFunction) => {
     try{
         const logged_in_user = req.user!;
         const project_id = req.params.project_id;
@@ -239,8 +225,6 @@ export const deleteTask = async (req: Request, res: Response) => {
         }
     }
     catch(error){
-        res.status(500).json({
-            "message": "Server error"        
-        })
+        next(error);
     }
 }

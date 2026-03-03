@@ -4,6 +4,7 @@ import connectDB from './config/db';
 import authRoutes from './routes/authRoutes';
 import projectRoutes from './routes/projectRoutes';
 import taskRoutes from './routes/taskRoutes';
+import {errorHandler} from './middleware/errorHandler';
 
 dotenv.config();
 
@@ -26,6 +27,8 @@ app.get('/health',(req: Request,res: Response) => {
 app.use('/api/auth', authRoutes);
 app.use('/api', projectRoutes);
 app.use('/api', taskRoutes);
+
+app.use(errorHandler)
 app.listen(PORT,() => {
     console.log(`Server running on PORT ${PORT}`);
 });
