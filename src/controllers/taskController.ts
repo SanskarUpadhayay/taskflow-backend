@@ -57,6 +57,10 @@ export const getAllTasksForProject = async (req: Request, res: Response, next: N
         const queryParamters = req.query;
         const status = queryParamters.status as string;
         const sort = queryParamters.sort as string;
+        const page = parseInt(queryParamters.page as string);
+        const pageNumber = page && page >=1 ? page : 1;
+        const limit = parseInt(queryParamters.limit as string);
+        const limitNumber = limit && limit >=1 ? limit : 10;
         const acceptable_status = ['todo','in-progress','done']; 
         let status_flag = false;
         if(status){
@@ -86,9 +90,17 @@ export const getAllTasksForProject = async (req: Request, res: Response, next: N
         }
         if(project.owner.equals(logged_in_user._id)){
             const task_filter= {project: project_id, ...(status_flag && {status})};
-            
-            const tasks = await Task.find(task_filter).sort({createdAt: sort_order});
-            res.status(200).json(tasks);
+            const tasks = await Task.find(task_filter).sort({createdAt: sort_order}).limit(limitNumber).skip((pageNumber-1)*limitNumber);
+            const totalRecords = await Task.countDocuments(task_filter);
+            res.status(200).json({
+            'data': tasks,
+            'pagination': {
+                'total': totalRecords,
+                'page': pageNumber,
+                'limit': limitNumber,
+                'totalPages': Math.ceil(totalRecords/limitNumber)
+            }
+        });
         }
         else{
             res.status(403).json({

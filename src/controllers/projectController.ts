@@ -31,11 +31,23 @@ export const createProject = async (req: Request, res: Response, next: NextFunct
 
 export const getAllUserProjects = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        const query_params = req.query;
+        const page = parseInt(query_params.page as string);
+        const pageNumber = page && page >=1 ? page : 1;
+        const limit = parseInt(query_params.limit as string);
+        const limitNumber = limit && limit >=1 ? limit : 10;
         const logged_in_user = req.user!;
         const user_id = logged_in_user._id;
-        const projects = await Project.find({ owner: user_id });
+        const projects = await Project.find({ owner: user_id }).limit(limitNumber).skip((pageNumber-1)*limitNumber);
+        const totalRecords = await Project.countDocuments( {owner: user_id });
         res.status(200).json({
-            'projects': projects
+            'data': projects,
+            'pagination': {
+                'total': totalRecords,
+                'page': pageNumber,
+                'limit': limitNumber,
+                'totalPages': Math.ceil(totalRecords/limitNumber)
+            }
         }
         );
     }

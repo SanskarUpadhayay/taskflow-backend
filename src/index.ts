@@ -1,4 +1,5 @@
 import express, {Request, Response} from 'express';
+import cors from 'cors';
 import dotenv from 'dotenv';
 import connectDB from './config/db';
 import authRoutes from './routes/authRoutes';
@@ -15,6 +16,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 //Middleware
+app.use(cors({ origin: 'http://localhost:5173' }));
 app.use(express.json());
 
 //Health Check Route
