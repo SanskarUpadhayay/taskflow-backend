@@ -16,11 +16,14 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 //Middleware
-app.use(cors({ origin: 'http://localhost:5173' }));
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',')
+  : ['http://localhost:5173'];
+app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
 
 //Health Check Route
-app.get('/health',(req: Request,res: Response) => {
+app.get('/health',(_req: Request,res: Response) => {
     res.status(200).json({
         "status": "OK"
     });
